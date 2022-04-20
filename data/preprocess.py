@@ -2,17 +2,20 @@
 import csv
 
 original_file = "./data/u.data"
-processed_file = "./data/movielens_users.csv"
+processed_file = "./data/movielens_ratings.csv"
 processed_file_header = ["user_id", "item_id", "rating", "timestamp"]
 
 
-with open('combined_file.csv', 'w', newline='') as outcsv:
-  writer = csv.writer(outcsv)
-  writer.writerow(processed_file_header)
+def preprocess_movielens_100k():
+  """Movielens 100k"""
+  with open(processed_file, "w") as f1:
+    writer = csv.writer(f1)
+    writer.writerow(processed_file_header)
 
-  with open(original_file, "rb") as f:
-    file = csv.reader(f, delimiter="\t")
-    writer.writerows(f)
+    with open(original_file, "r") as f2:
+      file = csv.reader(f2, delimiter="\t")
+      writer.writerows(file)
 
-print("Movielens 100k dataset processed")
-
+if __name__ == "__main__":
+  preprocess_movielens_100k()
+  print("Movielens 100k dataset preprocessed")
