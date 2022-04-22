@@ -1,4 +1,6 @@
 annoy==1.17.0
 numpy
+pandas
 sklearn
 h5py
+matplotlib

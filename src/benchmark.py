@@ -1,2 +1,2 @@
 class Benchmark:
-  pass
+    pass
