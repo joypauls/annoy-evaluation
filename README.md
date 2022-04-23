@@ -1,4 +1,4 @@
-# ANN Benchmarking
+# Approximate NN Method Evaluation
 
 This is a comparison of two popular Python (C++ under the hood!) libraries for Approximate Nearest Neighbors (ANN) that take different approaches:
 - [Annoy (Spotify)](https://github.com/spotify/annoy)
@@ -9,7 +9,14 @@ This is a comparison of two popular Python (C++ under the hood!) libraries for A
 ## Results
 
 
-## Running The Benchmark
+## Methods
+
+
+## About The Data
+
+---
+
+## Run It Yourself
 
 
 ## Building Entire Project Yourself
@@ -29,12 +36,9 @@ This is a comparison of two popular Python (C++ under the hood!) libraries for A
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
+├── notebooks          <- Jupyter notebooks
 │
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
+├── requirements.txt   <- The pip requirements file
 │
 ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
 ├── src                <- Source code for use in this project.

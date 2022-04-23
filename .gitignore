@@ -4,6 +4,8 @@ test.ann
 *.bf
 *.data
 *.hdf5
+*.pkl
+*.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
