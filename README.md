@@ -42,6 +42,22 @@ Time: 2-3 minutes
 python build_indexes.py
 ```
 
+### 4. Generate Results
+
+Time: 2-3 minutes
+
+```
+python generate_results.py
+```
+
+### 5. Evaluate
+
+Time: 2-3 minutes
+
+```
+python evaluate.py
+```
+
 
 ## Code Structure
 
