@@ -16,10 +16,34 @@ This is a comparison of two popular Python (C++ under the hood!) libraries for A
 
 ---
 
-## Run It Yourself
+## Run It Yourself!
+
+### 1. Download Datasets
+
+Time: a couple minutes, depends on network.
+
+```
+sh download.sh
+```
+
+### 2. Preprocess Datasets
+
+Time: 2-3 minutes
+
+```
+python preprocess.py
+```
+
+### 3. Build the Indexes
+
+Time: 2-3 minutes
+
+```
+python build_indexes.py
+```
 
 
-## Building Entire Project Yourself
+## Code Structure
 
 ```
 ├── LICENSE

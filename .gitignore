@@ -1,11 +1,14 @@
 .DS_Store
 test.ann
 *.annoy
+*.faiss
 *.bf
 *.data
 *.hdf5
 *.pkl
 *.npy
+
+models/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

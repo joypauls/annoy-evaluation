@@ -1,11 +1,19 @@
 """This is a base class for all methods."""
-
+import numpy as np
 from config import BUILT_INDEX_DIR
 
 class SearchIndex:
-  def __init__(self, training_data, method_name):
-    self.training_data = training_data
-    self.method_name = method_name
-    # intialize this attribute
+  """
+  Base class for any search index class.
+  """
+  def __init__(self, name: str):
+    self.name = name
+    # intialize this attribute for child class
     self.index = None
+
+  def is_initialized(self) -> bool:
+    return self.index is None
+
+  def get_id(self) -> str:
+    return self.name + "_index"
 

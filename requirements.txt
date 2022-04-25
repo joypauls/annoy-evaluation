@@ -4,6 +4,7 @@ pandas
 sklearn
 h5py
 matplotlib
+tqdm
 
 # for notebooks
 jupyter
