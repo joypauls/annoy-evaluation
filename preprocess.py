@@ -1,4 +1,4 @@
-"""This script converts the dataset from it's original form (u.data) to a more convenient format."""
+"""This script converts the dataset from its original form to a more convenient format."""
 import csv
 import logging
 import pickle
@@ -7,7 +7,9 @@ from time import time
 from src.dataset import BenchmarkDataset
 from src.config import RAW_PATHS, PROCESSED_PATHS, DATASET_IDS, K_NEIGHBORS_MAX
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s")
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s"
+)
 
 
 def save_dataset(d: BenchmarkDataset, path: str):

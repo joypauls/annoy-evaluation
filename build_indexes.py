@@ -10,7 +10,9 @@ from src.config import BUILT_INDEX_DIR, PROCESSED_PATHS, DATASET_IDS, N_LIST, N_
 from src.dataset import BenchmarkDataset, get_dataset
 from src.annoy import Annoy
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s")
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s"
+)
 
 
 def get_dataset(path: str) -> BenchmarkDataset:
@@ -34,10 +36,7 @@ if __name__ == "__main__":
         embedding_dim = bd.train.shape[1]
 
         # build annoy
-        annoy_index = Annoy(
-            dim=embedding_dim,
-            name="{}_annoy".format(DATASET_IDS[i])
-        )
+        annoy_index = Annoy(dim=embedding_dim, name="{}_annoy".format(DATASET_IDS[i]))
         annoy_index.build(bd.train, N_TREES)
         annoy_index.save(BUILT_INDEX_DIR)
         logging.info("Built: {}".format(annoy_index.name))

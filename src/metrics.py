@@ -1,5 +1,6 @@
 """Metrics used in project."""
 
+
 def average_recall(ground_truth, estimated, k=5):
     """Fetches rows from a Smalltable.
 
