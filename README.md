@@ -1,7 +1,6 @@
 # Annoy Similarity Search Evaluation
 
-!!! important
-    This works, but is a WIP and under development.
+> :warning: This works, but is a WIP and under development.
 
 This is a proof-of-concept evaluation of a popular Python (C++ under the hood!) library for Approximate Nearest Neighbors (ANN) similarity search. Its performance, as measured by [recall](https://en.wikipedia.org/wiki/Precision_and_recall#Recall), is measured for a few different datasets (see [below](#datasets)):
 - [Annoy (Spotify)](https://github.com/spotify/annoy)
