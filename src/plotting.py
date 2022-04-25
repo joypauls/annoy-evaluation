@@ -1,32 +1,47 @@
 """Plotting helper functions."""
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import List
+
+plt.rcParams["figure.figsize"] = (10, 6)
+
+LINE_COLOR_SEQUENCE = ["#4c72b0", "#cc642a", "#0a610a"]
 
 
-def recall_distribution_plot(annoy_recall: np.ndarray, faiss_recall: np.ndarray, dataset_id: str):
+def recall_distribution_plot(recall: List[np.ndarray], dataset_ids: List[str]):
   """
-  Plots the distribution of average recall for the test set.
+  Plots the distribution of average recall for each dataset.
   """
   bins = 20
-  annoy_mean = np.mean(annoy_recall)
-  annoy_plot_weights = np.ones(len(annoy_recall)) / len(annoy_recall)
-  faiss_mean = np.mean(faiss_recall)
-  faiss_plot_weights = np.ones(len(faiss_recall)) / len(faiss_recall)
+  means = [np.mean(x) for x in recall]
+  plot_weights = np.ones(len(recall[0])) / len(recall[0])
 
+  bar_n_list = []  # used for bar chart scaling stuff
+  for i, x in enumerate(recall):
+    n, _, _ = plt.hist(x, weights=plot_weights, bins=bins, alpha=0.5, label=dataset_ids[i])
+    bar_n_list.append(n)
 
-  n1, _, _ = plt.hist(annoy_recall, weights=annoy_plot_weights, bins=bins, alpha=0.5, label="Annoy")
-  plt.axvline(annoy_mean, color="#4c72b0", alpha=0.6, ls="--", label="Annoy MAR@100")
-
-  n2, _, _ = plt.hist(faiss_recall, weights=faiss_plot_weights, bins=bins, alpha=0.5, label="Faiss")
-  plt.axvline(faiss_mean, color="#cc642a", alpha=0.6, ls="--", label="Faiss MAR@100")
-
-  plot_height = max(np.max(n1), np.max(n2))  # in y-axis units
-  plt.text(annoy_mean + 0.01, plot_height*0.8, "MAR = {:.2f}".format(annoy_mean), rotation=90, verticalalignment="center")
-  plt.text(faiss_mean + 0.01, plot_height*0.8, "MAR = {:.2f}".format(faiss_mean), rotation=90, verticalalignment="center")
+  plot_height = np.max(bar_n_list)
+  for j, mean in enumerate(means):
+    plt.axvline(mean, color=LINE_COLOR_SEQUENCE[j], alpha=0.6, ls="--", label="MAR@100 ({})".format(dataset_ids[j]))
+    plt.text(mean + 0.01, plot_height*0.8, "MAR = {:.2f}".format(mean), rotation=90, verticalalignment="center")
 
   plt.legend()
-  plt.title("Distribution of Recall@100 for Test Queries ({})".format(dataset_id))
-  plt.xlabel("Average Recall @ 100")
+  plt.title("Distribution of Annoy Recall@100 for Test Queries")
+  plt.xlabel("Average Recall@100")
   plt.ylabel("Percent")
 
-  plt.savefig("./plots/recall_distribution_{}.png".format(dataset_id))
+  plt.savefig("./plots/recall_distribution.png")
+  plt.close()
+
+
+def recall_curve_plot(recall: List[np.ndarray], dataset_ids: List[str]):
+  """
+  Plots the recall curve for each dataset.
+  """
+  depths = np.arange(1, recall[0].shape[0] + 1, 1, dtype=int)
+  for i, x in enumerate(recall):
+    plt.plot(depths, x)
+
+  plt.savefig("./plots/recall_at_varying_depths.png")
+  plt.close()

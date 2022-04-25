@@ -9,7 +9,6 @@ from time import time
 from src.config import BUILT_INDEX_DIR, PROCESSED_PATHS, DATASET_IDS, N_LIST, N_TREES
 from src.dataset import BenchmarkDataset, get_dataset
 from src.annoy import Annoy
-from src.faiss import Faiss
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s")
 
@@ -42,15 +41,6 @@ if __name__ == "__main__":
         annoy_index.build(bd.train, N_TREES)
         annoy_index.save(BUILT_INDEX_DIR)
         logging.info("Built: {}".format(annoy_index.name))
-
-        # build faiss
-        faiss_index = Faiss(
-            dim=embedding_dim,
-            name="{}_faiss".format(DATASET_IDS[i])
-        )
-        faiss_index.build(bd.train, N_LIST)
-        faiss_index.save(BUILT_INDEX_DIR)
-        logging.info("Built: {}".format(faiss_index.name))
 
     end = time()
 

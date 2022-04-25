@@ -25,7 +25,7 @@ if __name__ == "__main__":
         bd = BenchmarkDataset(id=DATASET_IDS[i])
         bd.load_from_h5py(raw_path)
         logging.info(bd)
-        # bd.compute_neighbors(metric="angular", k=K_NEIGHBORS_MAX)
+        bd.compute_neighbors(metric="angular", k=K_NEIGHBORS_MAX)
         logging.info(bd)
         save_dataset(bd, PROCESSED_PATHS[i])
 

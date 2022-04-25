@@ -1,7 +1,6 @@
 """Evaluate methods over the test sets."""
 import numpy as np
-from annoy import AnnoyIndex
-import faiss
+import pandas as pd
 import pickle
 import logging
 from time import time
@@ -9,7 +8,7 @@ from time import time
 from src.config import BUILT_INDEX_DIR, K_NEIGHBORS_OVERALL, PROCESSED_PATHS, DATASET_IDS, K_NEIGHBORS_MAX
 from src.dataset import BenchmarkDataset, get_dataset
 from src.annoy import Annoy
-from src.plotting import recall_distribution_plot
+from src.plotting import recall_distribution_plot, recall_curve_plot
 from src.metrics import average_recall
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s :: %(levelname)s :: %(message)s")
@@ -18,77 +17,56 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s :: %(levelname)s :: 
 if __name__ == "__main__":
     start = time()
 
+    # gather results over all datasets then plot
+    recall_distributions = []
+    # recall_depth_results = []
+
     # iterate over datasets
-    for i, processed_path in enumerate(PROCESSED_PATHS[0:1]):
+    # TODO: i'm sure a ton of these operations can be vectorized
+    for i, processed_path in enumerate(PROCESSED_PATHS):
         # load dataset
         logging.info("=> EVALUATING RESULTS FOR {}".format(processed_path))
         bd = get_dataset(processed_path)
 
         # load results
         annoy_results = np.load("./data/annoy_results_{}.npy".format(DATASET_IDS[i]))
-        faiss_results = np.load("./data/faiss_results_{}.npy".format(DATASET_IDS[i]))
 
-        print(faiss_results[0:10, 0:10])
-
-        # initialize recall distribution arrays
-        annoy_recall_distribution = np.zeros((annoy_results.shape[0],), dtype=np.float32)
-        faiss_recall_distribution = np.zeros((faiss_results.shape[0],), dtype=np.float32)
+        # initialize recall distribution array
+        recall_distribution = np.zeros((annoy_results.shape[0],), dtype=np.float32)
+        
+        # # initialize recall depth array
+        # recall_depth = np.zeros((100, K_NEIGHBORS_MAX), dtype=np.float32)
+        # # recall_depth = np.zeros((annoy_results.shape[0], K_NEIGHBORS_MAX), dtype=np.float32)
 
         # iterate to do calculations
         # TODO: this can be more efficient
         for j, x in enumerate(annoy_results):
-          annoy_recall_distribution[j] = average_recall(
+          # recall distribution at a single search depth
+          recall_distribution[j] = average_recall(
             bd.ground_truth[j, 0:K_NEIGHBORS_OVERALL], 
             x[0:K_NEIGHBORS_OVERALL], 
             K_NEIGHBORS_OVERALL
           )
-          faiss_recall_distribution[j] = average_recall(
-            bd.ground_truth[j, 0:K_NEIGHBORS_OVERALL], 
-            faiss_results[j, 0:K_NEIGHBORS_OVERALL], 
-            K_NEIGHBORS_OVERALL
-          )
 
-        print(faiss_recall_distribution[0:10])
+          # cur_query_recall = np.zeros((K_NEIGHBORS_MAX,), dtype=np.float32)
+          # # recall calculated at each depth
+          # for d in range(1, K_NEIGHBORS_MAX+1):
+          #   cur_query_recall[d-1] = average_recall(
+          #     bd.ground_truth[j, 0:d], 
+          #     x[0:d], 
+          #     d
+          #   )
 
-        recall_distribution_plot(annoy_recall_distribution, faiss_recall_distribution, DATASET_IDS[i])
-        logging.info("Annoy MAR: {}, Faiss MAR: {}".format(np.mean(annoy_recall_distribution), np.mean(faiss_recall_distribution)))
+          # # assign to matrix of results
+          # recall_depth[j] = cur_query_recall
 
+        # gather results of the whole dataset
+        recall_distributions.append(recall_distribution)
+        # recall_depth_results.append(np.apply_along_axis(np.mean, 0, recall_depth))
+        logging.info("Annoy MAR ({}): {}".format(DATASET_IDS[i], np.mean(recall_distribution)))
 
-
-
-
-
-        # prep
-        # num_test_vectors = bd.test.shape[0]
-
-        # can precompute in a batch
-        # _, faiss_estimated = faiss_index.search(glove25_test_np_norm[0:100], k)
-
-        # annoy_neighbors = np.zeros((num_test_vectors, K_NEIGHBORS_MAX), dtype=np.int32)
-        # faiss_neighbors = np.zeros((test_size, k), dtype=np.int32)
-        # results_summary = []
-
-        # # annoy
-        # annoy_index = Annoy(
-        #     dim=embedding_dim,
-        #     metric="angular",
-        #     name="{}_annoy".format(DATASET_IDS[i])
-        # )
-        # annoy_index.load_from_file(BUILT_INDEX_DIR + DATASET_IDS[i] + "_annoy_index")
-        # annoy_neighbors = annoy_index.batch_query(bd.test, K_NEIGHBORS_MAX)
-        # np.save("./data/annoy_results_{}.npy".format(DATASET_IDS[i]), annoy_neighbors)  # save the array
-        # logging.info("{} results: {}".format(annoy_index.name, annoy_neighbors.shape))
-
-        # build faiss
-        # faiss_index = Annoy(
-        #     dim=embedding_dim,
-        #     metric="angular",
-        #     name="{}_annoy".format(DATASET_IDS[i])
-        # )
-        # annoy_index.load_from_file(BUILT_INDEX_DIR + DATASET_IDS[i] + "_annoy_index")
-        # annoy_neighbors = annoy_index.batch_query(bd.test, K_NEIGHBORS_MAX)
-        # np.save("./data/annoy_results_{}.npy".format(DATASET_IDS[i]), annoy_neighbors)  # save the array
-        # logging.info("{} results: {}".format(annoy_index.name, annoy_neighbors.shape))
+    recall_distribution_plot(recall_distributions, DATASET_IDS)
+    # recall_curve_plot(recall_depth_results, DATASET_IDS)
 
     end = time()
 

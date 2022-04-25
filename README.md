@@ -1,18 +1,34 @@
-# Approximate NN Method Evaluation
+# Annoy Similarity Search Evaluation
 
-This is a comparison of two popular Python (C++ under the hood!) libraries for Approximate Nearest Neighbors (ANN) that take different approaches:
+This is a proof-of-concept evaluation of a popular Python (C++ under the hood!) library for Approximate Nearest Neighbors (ANN) similarity search. Its performance, as measured by [recall](https://en.wikipedia.org/wiki/Precision_and_recall#Recall), is measured for a few different datasets (see [below](#datasets))
 - [Annoy (Spotify)](https://github.com/spotify/annoy)
   - Builds search index using a tree-based algorithm
+
+The library below is utilized to perform a fast and efficient *exhaustive search* to produce ground truth nearest neighbors to measure recall against.
 - [Faiss (Facebook)](https://github.com/facebookresearch/faiss)
   - Uses hash table with Locality Sensitive Hashing (LSH) as a search index
 
+- Time permitting, it would also be nice to add other methods to the evaluation phase, such as Faiss
+- Note that this study does *not* measure lookup speeds (ie queries/second) which is a major component of choosing a library to use for this type of task
+
+## Datasets
+
+- Info about the GloVe datasets can be found [here](https://nlp.stanford.edu/projects/glove/)
+- Datasets used in this project are retrieved from the [ann-benchmarks](https://github.com/erikbern/ann-benchmarks) project and transformed further
+  - glove25: GloVe with 25-dimensional embedding vectors
+  - glove50: GloVe with 50-dimensional embedding vectors
+  - glove100: GloVe with 100-dimensional embedding vectors
+
+
 ## Results
 
+Each dataset contains a training set and a test set. The plot below shows the distribution of recall@100 (that is, recall when retrieving the 100 nearest neighbors) for each query vector in the test set of each dataset. The vertical line of the same color shows the Mean Average Recall (MAR@100) for the entire test set.
 
-## Methods
+![preliminary results](./plots/recall_distribution.png)
+
+## Note on Methods
 
 
-## About The Data
 
 ---
 
@@ -44,7 +60,7 @@ python build_indexes.py
 
 ### 4. Generate Results
 
-Time: 2-3 minutes
+Time: ~1 minute
 
 ```
 python generate_results.py
@@ -52,53 +68,11 @@ python generate_results.py
 
 ### 5. Evaluate
 
-Time: 2-3 minutes
+Time: <1 minute
 
 ```
 python evaluate.py
 ```
-
-
-## Code Structure
-
-```
-├── LICENSE
-├── Makefile           <- Makefile with commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
-│── models
-│   ├── random.bf       <- Data from third party sources.
-│   ├── random.annoy        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
-│
-├── notebooks          <- Jupyter notebooks
-│
-├── requirements.txt   <- The pip requirements file
-│
-├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-├── src                <- Source code for use in this project.
-│   ├── __init__.py    <- Makes src a Python module
-│   │
-│   ├── data           <- Scripts to download or generate data
-│   │   └── make_dataset.py
-│   │
-│   ├── features       <- Scripts to turn raw data into features for modeling
-│   │   └── build_features.py
-│   │
-│   ├── models         <- Scripts to train models and then use trained models to make
-│   │   │                 predictions
-│   │   ├── predict_model.py
-│   │   └── train_model.py
-│   │
-│   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-│       └── visualize.py
-```
-
 
 
 
