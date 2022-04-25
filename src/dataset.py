@@ -3,14 +3,15 @@ import numpy as np
 import h5py
 from sklearn.preprocessing import normalize
 import faiss
-from tqdm import tqdm
+import pickle
 
 
 class BenchmarkDataset:
   """
   Description
   """
-  def __init__(self, train: np.ndarray = None, test: np.ndarray = None, ground_truth: np.ndarray = None):
+  def __init__(self, id: str, train: np.ndarray = None, test: np.ndarray = None, ground_truth: np.ndarray = None):
+    self.id = id
     self.train = train
     self.test = test
     self.ground_truth = ground_truth
@@ -66,7 +67,13 @@ class BenchmarkDataset:
       raise Exception("Mismatch between computed neighbors and original ground truth.")
 
   def __str__(self):
-    return "BenchmarkDataset(train shape: {}, test shape: {}, ground_truth shape: {})".format(self.train.shape, self.test.shape, self.ground_truth.shape)
+    return "BenchmarkDataset(id={}, train={}, test={}, ground_truth={})".format(self.id, self.train.shape, self.test.shape, self.ground_truth.shape)
   
 
-
+def get_dataset(path: str) -> BenchmarkDataset:
+    """
+    Loads a BenchmarkDataset object from a pickle file.
+    """
+    with open(path, "rb") as f:
+        bd = pickle.load(f)
+    return bd

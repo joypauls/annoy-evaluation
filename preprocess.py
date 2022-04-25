@@ -5,15 +5,9 @@ import pickle
 from time import time
 
 from src.dataset import BenchmarkDataset
+from src.config import RAW_PATHS, PROCESSED_PATHS, DATASET_IDS, K_NEIGHBORS_MAX
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s")
-
-# parameters
-K_NEIGHBORS = 300
-
-# paths to datasets
-raw_paths = ["./data/raw/glove-25-angular.hdf5", "./data/raw/glove-50-angular.hdf5", "./data/raw/glove-100-angular.hdf5"]
-output_paths = ["./data/glove-25-angular.pkl", "./data/glove-50-angular.pkl", "./data/glove-100-angular.pkl"]
 
 
 def save_dataset(d: BenchmarkDataset, path: str):
@@ -26,14 +20,14 @@ if __name__ == "__main__":
 
     start = time()
 
-    for i, raw_path in enumerate(raw_paths):
+    for i, raw_path in enumerate(RAW_PATHS):
         logging.info("=> PROCESSING {}".format(raw_path))
-        bd = BenchmarkDataset()
+        bd = BenchmarkDataset(id=DATASET_IDS[i])
         bd.load_from_h5py(raw_path)
         logging.info(bd)
-        bd.compute_neighbors(metric="angular", k=K_NEIGHBORS)
+        # bd.compute_neighbors(metric="angular", k=K_NEIGHBORS_MAX)
         logging.info(bd)
-        save_dataset(bd, output_paths[i])
+        save_dataset(bd, PROCESSED_PATHS[i])
 
     end = time()
 

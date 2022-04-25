@@ -1,31 +1,57 @@
-# Benchmarking script
-from annoy import AnnoyIndex
+"""Builds the search indexes for each dataset and each candidate library."""
 import numpy as np
+from annoy import AnnoyIndex
+import faiss
 import pickle
+import logging
+from time import time
 
-dim = 36  # Length of item vector that will be indexed
-n = 1000
-np.random.seed(1312)
+from src.config import BUILT_INDEX_DIR, PROCESSED_PATHS, DATASET_IDS, N_LIST, N_TREES
+from src.dataset import BenchmarkDataset, get_dataset
+from src.annoy import Annoy
+from src.faiss import Faiss
 
-random_data = np.array([np.random.normal(0, 1, dim) for i in range(0, n)])
-
-
-def build_bf_index():
-    with open("./data/random.bf", "wb") as f:
-        pickle.dump(random_data, f)
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s :: %(levelname)s :: %(message)s")
 
 
-def build_annoy_index():
-    t = AnnoyIndex(dim, "angular")
-    for i, x in enumerate(random_data):
-        t.add_item(i, x)
-    t.build(10)  # 10 trees
-    t.save("./data/random.annoy")
+def get_dataset(path: str) -> BenchmarkDataset:
+    """
+    Loads a BenchmarkDataset object from a pickle file.
+    """
+    with open(path, "rb") as f:
+        bd = pickle.load(f)
+    return bd
 
 
-build_annoy_index()
-build_bf_index()
+if __name__ == "__main__":
+    logging.info("Begin building search indexes")
+    start = time()
 
-u = AnnoyIndex(dim, "angular")
-u.load("./data/random.annoy")  # super fast, will just mmap the file
-print(u.get_nns_by_item(0, 10))  # will find the 10 nearest neighbors
+    # iterate over datasets
+    for i, processed_path in enumerate(PROCESSED_PATHS):
+        # load dataset
+        logging.info("=> BUILDING INDEXES FOR {}".format(processed_path))
+        bd = get_dataset(processed_path)
+        embedding_dim = bd.train.shape[1]
+
+        # build annoy
+        annoy_index = Annoy(
+            dim=embedding_dim,
+            name="{}_annoy".format(DATASET_IDS[i])
+        )
+        annoy_index.build(bd.train, N_TREES)
+        annoy_index.save(BUILT_INDEX_DIR)
+        logging.info("Built: {}".format(annoy_index.name))
+
+        # build faiss
+        faiss_index = Faiss(
+            dim=embedding_dim,
+            name="{}_faiss".format(DATASET_IDS[i])
+        )
+        faiss_index.build(bd.train, N_LIST)
+        faiss_index.save(BUILT_INDEX_DIR)
+        logging.info("Built: {}".format(faiss_index.name))
+
+    end = time()
+
+    logging.info("Done in {:.5f} s".format(end - start))

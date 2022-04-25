@@ -1,6 +1,6 @@
 """This is a base class for all methods."""
 import numpy as np
-from config import BUILT_INDEX_DIR
+
 
 class SearchIndex:
   """
